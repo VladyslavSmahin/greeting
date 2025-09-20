@@ -112,13 +112,12 @@ export default function App() {
                         <button className="button-small" onClick={() => handleAndConfirm("не знаю, а може знаю )))))")}>не знаю не знаю</button>
                         {/* Кастомное сообщение */}
                         <div className="send-box">
-                            <button
+                            <a
                                 className="send-btn"
-                                onClick={() => handleAndConfirm(customText)}
-                                disabled={!customText.trim()}
+                                href="https://t.me/VladyslavSmagin"
                             >
                                 Свій варіант в Telegram
-                            </button>
+                            </a>
                         </div>
 
                     </div>
