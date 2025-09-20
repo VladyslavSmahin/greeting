@@ -14,22 +14,39 @@ export default function App() {
     }, []);
 
     // Open Telegram DM with prefilled text (fallback to share url)
-    const sendToTelegram = (text) => {
-        const message = encodeURIComponent(text || "");
-        if (!message) return;
-        const username = "VladyslavSmagin"; // твой @username
-        const tgDeep = `tg://resolve?domain=${username}&text=${message}`;
-        const tgShare = `https://t.me/share/url?url=&text=${message}`;
+    // Надёжная отправка в Telegram (работает в webview/браузере)
+    const sendToTelegram = (raw) => {
+        const text = (raw || "").trim();
+        if (!text) return;
 
-        // Пытаемся открыть нативный клиент Telegram
-        const win = window.open(tgDeep, "_blank");
-        // Если нативный протокол недоступен (десктоп без клиента) — откроется веб-шаринг
-        setTimeout(() => {
-            try { if (!win || win.closed) window.open(tgShare, "_blank"); } catch (_) {
-                window.open(tgShare, "_blank");
+        const message  = encodeURIComponent(text);
+        const username = "VladyslavSmagin";
+
+        // deep link в нативный Telegram-клиент
+        const tgDeep = `tg://resolve?domain=${username}&text=${message}`;
+        // веб-урл на случай, если deep link не сработал
+        const tgWeb  = `https://t.me/${username}?text=${message}`;
+
+        let fbTimer;
+        const onVisibility = () => {
+            // если страница ушла в фон (Телеграм открылся) — отменяем фоллбек
+            if (document.hidden) {
+                clearTimeout(fbTimer);
+                document.removeEventListener("visibilitychange", onVisibility);
             }
-        }, 400);
+        };
+        document.addEventListener("visibilitychange", onVisibility);
+
+        // используем переход вместо window.open (меньше шансов блокировки попапов)
+        window.location.href = tgDeep;
+
+        // если deep link не сработал — открываем веб через 700 мс
+        fbTimer = setTimeout(() => {
+            document.removeEventListener("visibilitychange", onVisibility);
+            window.open(tgWeb, "_blank");
+        }, 700);
     };
+
 
     // "Убегающая" анимация по наведению (оставим как эффект), но клик теперь тоже отправляет сообщение
     const moveRandomButton = () => {
