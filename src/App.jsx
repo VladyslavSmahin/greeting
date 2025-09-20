@@ -3,7 +3,7 @@ import "./App.css";
 
 export default function App() {
     const [stage, setStage] = useState("greeting"); // greeting -> main -> approval
-    const [isRandomDisabled, setIsRandomDisabled] = useState(false);
+    const [customText, setCustomText] = useState("");
     const mainRef = useRef(null);
     const randomBtnRef = useRef(null);
 
@@ -13,9 +13,26 @@ export default function App() {
         return () => clearTimeout(t);
     }, []);
 
-    // Move the "random" button to a random location within viewport on hover
+    // Open Telegram DM with prefilled text (fallback to share url)
+    const sendToTelegram = (text) => {
+        const message = encodeURIComponent(text || "");
+        if (!message) return;
+        const username = "VladyslavSmagin"; // твой @username
+        const tgDeep = `tg://resolve?domain=${username}&text=${message}`;
+        const tgShare = `https://t.me/share/url?url=&text=${message}`;
+
+        // Пытаемся открыть нативный клиент Telegram
+        const win = window.open(tgDeep, "_blank");
+        // Если нативный протокол недоступен (десктоп без клиента) — откроется веб-шаринг
+        setTimeout(() => {
+            try { if (!win || win.closed) window.open(tgShare, "_blank"); } catch (_) {
+                window.open(tgShare, "_blank");
+            }
+        }, 400);
+    };
+
+    // "Убегающая" анимация по наведению (оставим как эффект), но клик теперь тоже отправляет сообщение
     const moveRandomButton = () => {
-        if (isRandomDisabled) return;
         const btn = randomBtnRef.current;
         if (!btn) return;
 
@@ -31,20 +48,18 @@ export default function App() {
         const randomY = Math.random() * maxY;
 
         btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
-
-        // через 1 секунду после улёта скрываем кнопку и показываем уведомление
-        setTimeout(() => setIsRandomDisabled(true), 1000);
     };
 
-    const handleApproveClick = () => {
-        const el = mainRef.current;
-        if (el) {
-            el.style.transition = "opacity 2s";
-            el.style.opacity = "0";
-            setTimeout(() => setStage("approval"), 2000);
-        } else {
-            setStage("approval");
-        }
+    // Быстрые варианты
+    const quickOptions = [
+        "А давай спробуєм, як?)",
+        "Давай більше дізнаємось один одного",
+        "На вихідних мені може бути зручно",
+    ];
+
+    const handleAndConfirm = (text) => {
+        sendToTelegram(text);
+        setStage("approval");
     };
 
     return (
@@ -56,33 +71,55 @@ export default function App() {
             {stage === "main" && (
                 <div ref={mainRef} className="main-content" aria-live="polite">
                     <div className="achieves">
-                        <span className="done">
-                            Чи буде на то ваша ласка погодитись на побачення зі мною <span className="done_1">?)</span>
-                        </span>
+            <span className="done">
+              Чи буде на то ваша ласка погодитись на побачення зі мною <span className="done_1">?)</span>
+            </span>
                         <span className="agree">Тицяй кнопочку знизу</span>
                     </div>
+
                     <div className="buttons">
-                        <button className="button" onClick={handleApproveClick}>Ну добре вже</button>
-                        {!isRandomDisabled ? (
+                        <div className="options">
+                            {quickOptions.map((txt, i) => (
+                                <button key={i} className="option-btn button" onClick={() => handleAndConfirm(txt)}>
+                                    {txt}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Кастомное сообщение */}
+                        <div className="send-box">
+                            <input
+                                className="send-input"
+                                type="text"
+                                placeholder="Напиши свій варіант…"
+                                value={customText}
+                                onChange={(e) => setCustomText(e.target.value)}
+                            />
                             <button
-                                ref={randomBtnRef}
-                                className="random-button"
-                                onMouseEnter={moveRandomButton}
+                                className="send-btn"
+                                onClick={() => handleAndConfirm(customText)}
+                                disabled={!customText.trim()}
                             >
-                                Ну я подумаю
+                                Надіслати в Telegram
                             </button>
-                        ) : (
-                            <div className="random-disabled">
-                                Ця кнопка недоступна ☹️ <br /> Користуйся вищею ↑
-                            </div>
-                        )}
+                        </div>
+
+                        {/* "Ну я подумаю" теперь тоже шлёт текст при клике */}
+                        <button
+                            ref={randomBtnRef}
+                            className="random-button"
+                            onMouseEnter={moveRandomButton}
+                            onClick={() => handleAndConfirm("Ну я подумаю")}
+                        >
+                            Ну я подумаю
+                        </button>
                     </div>
                 </div>
             )}
 
             {stage === "approval" && (
                 <div className="approval-container">
-                    <div className="approval-text">Дяякую, напиши мені про це, будь-ласка☺️</div>
+                    <div className="approval-text">Дяякую! Повідомлення вже летить у Telegram ☺️</div>
                     <a className="approval-link" href="https://t.me/VladyslavSmagin" target="_blank" rel="noreferrer">
                         Мій телеграм
                     </a>
