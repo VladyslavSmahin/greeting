@@ -6,10 +6,6 @@
     padding: 0;
 }
 
-a, button {
-    color: black;
-}
-
 /* Root container used by App */
 #root {
     width: 100%;
@@ -21,9 +17,11 @@ a, button {
     overflow: hidden;
     position: relative;
 }
-.app{
+
+.app {
     width: 100%;
 }
+
 .greeting {
     position: fixed;
     inset: 0;
@@ -42,7 +40,7 @@ a, button {
         opacity: 1;
     }
     80% {
-        opacity:  0.3;
+        opacity: 0.3;
     }
     100% {
         opacity: 0;
@@ -101,21 +99,24 @@ a, button {
     gap: 20px;
     position: relative;
 
-    .options{
+    .options {
         display: flex;
         flex-direction: column;
         align-items: center;
 
     }
-    .send-box{
+
+    .send-box {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 20px;
-        input{
+
+        input {
             padding: 10px;
         }
-        button{
+
+        button {
             color: white;
         }
     }
@@ -225,4 +226,32 @@ a, button {
     .random-button {
         font-size: calc(15px + 5 * (100vw - 360px) / 1080);
     }
+}
+
+html, body {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+}
+
+.root {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.main-content {
+    min-height: 100svh;
+    height: auto;
+}
+
+@supports (height: 100dvh) {
+    .main-content {
+        min-height: 100dvh;
+    }
+}
+
+/* Ensure content not clipped by mobile UI bars */
+.app, .main-content {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
 }

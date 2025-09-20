@@ -52,9 +52,11 @@ export default function App() {
 
     // Быстрые варианты
     const quickOptions = [
-        "А давай спробуєм, як?)",
-        "Давай більше дізнаємось один одного",
-        "На вихідних мені може бути зручно",
+        "Ну давай-давай,коли?",
+        "На вихідних мені зручніше може бути",
+        "Зустрінемось))",
+        "Ти себе бачив?😁",
+        "Ну не знаю - не знаю",
     ];
 
     const handleAndConfirm = (text) => {
@@ -78,14 +80,18 @@ export default function App() {
                     </div>
 
                     <div className="buttons">
+                        {/* Главная кнопка теперь тоже отправляет текст */}
+
+
+                        {/* Три быстрых варианта */}
                         <div className="options">
                             {quickOptions.map((txt, i) => (
-                                <button key={i} className="option-btn button" onClick={() => handleAndConfirm(txt)}>
+                                <button key={i} className="option-btn" onClick={() => handleAndConfirm(txt)}>
                                     {txt}
                                 </button>
                             ))}
                         </div>
-
+                        <button className="button-small" onClick={() => handleAndConfirm("не знаю, а може знаю )))))")}>не знаю не знаю</button>
                         {/* Кастомное сообщение */}
                         <div className="send-box">
                             <input
@@ -104,15 +110,6 @@ export default function App() {
                             </button>
                         </div>
 
-                        {/* "Ну я подумаю" теперь тоже шлёт текст при клике */}
-                        <button
-                            ref={randomBtnRef}
-                            className="random-button"
-                            onMouseEnter={moveRandomButton}
-                            onClick={() => handleAndConfirm("Ну я подумаю")}
-                        >
-                            Ну я подумаю
-                        </button>
                     </div>
                 </div>
             )}
@@ -130,3 +127,5 @@ export default function App() {
         </div>
     );
 }
+
+
