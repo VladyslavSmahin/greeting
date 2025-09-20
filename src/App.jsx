@@ -110,13 +110,6 @@ export default function App() {
                         <button className="button-small" onClick={() => handleAndConfirm("не знаю, а може знаю )))))")}>не знаю не знаю</button>
                         {/* Кастомное сообщение */}
                         <div className="send-box">
-                            <input
-                                className="send-input"
-                                type="text"
-                                placeholder="Напиши свій варіант…"
-                                value={customText}
-                                onChange={(e) => setCustomText(e.target.value)}
-                            />
                             <button
                                 className="send-btn"
                                 onClick={() => handleAndConfirm(customText)}
